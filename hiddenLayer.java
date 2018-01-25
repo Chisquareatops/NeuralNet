@@ -17,6 +17,8 @@ public class hiddenLayer implements layer {
 	protected outputLayer output; //SHOULD BE GENERALIZED SO CAN BE ANY LAYER???
 	protected int numInputVars;
 	
+	protected double[] currentInp;
+	
 	//SHOULD THERE BE A FIELD FOR THE INPUTS? sometimes inputs will be the user inputs, and sometimes they will be the previous middle layer?
 
 	public hiddenLayer(int nodes, int numInputVars, Activators activator, outputLayer output) {
@@ -40,6 +42,8 @@ public class hiddenLayer implements layer {
 		//DIAGNOSTIC PRINT LINE BEGIN
 		System.out.println("this is the beginning of forward (HL)");
 		//DIAGNOSTIC PRINT LINE END
+		
+		this.currentInp = input;
 		
 		for (int i=0; i<this.nodes; i++) { //loops through each column in the weight matrix (the number of nodes in hidden layer)
 			double sum = 0;
@@ -166,6 +170,34 @@ public class hiddenLayer implements layer {
 		
 	}
 	
+	public void backward2 (double[] targetVals, int numOutputVars) {
+		
+		double[] backpropToHidden = new double[this.nodes]; // create an empty array to hold the needed change from output up to the current hidden node
+		
+		for (int i=0; i<this.nodes; i++) { // for each hidden node in this layer
+			double totalOutput = 0; // total output is a bad name for this variable, find a better one
+			for (int x=0; x<numOutputVars; x++) { // for each output variable to which this node connects
+				double output = this.output.getOutput(x); // fetch the final activated output for this output node
+				double form1 = (output - targetVals[x]) * (output * (1 - output)); // calculate the first part of the formula, which will apply to all connected hidden nodes
+				totalOutput += (form1 * this.nextLayer.getWeights()[x][i]); // multiiply it by the weight connecting the current hidden node to the current output node and add the results together
+			}
+			backpropToHidden[i] = totalOutput; // place the calculation up to now in an array
+		}
+		
+		weightMatrix origWeights = this.weights.deepCopy(); // copy the weights before changing
+		
+		for (int i=0; i<this.nodes; i++) { // for each input variable to which this node connects
+			for (int x=0; x<this.numInputVars; x++) {
+				double currentHiddenSum = this.hiddenMatrix[i];
+				double form1 = currentHiddenSum * (1 - currentHiddenSum) * this.currentInp[x];
+				double deltaWeight = form1 * backpropToHidden[i];
+				System.out.print(deltaWeight + " ");
+      			double newWeight = this.weights.getWeight(i, x) - deltaWeight; // the new weight is the current weight at this location in the weight matrix minus the change calculated above
+      			this.weights.setWeight(i, x, newWeight); // set weight to new weight
+			}
+		}
+	}
+	
 	public void setNext(layer nextLayer) {
 		this.nextLayer = nextLayer;
 		nextLayer.setPrev(this);
@@ -184,6 +216,13 @@ public class hiddenLayer implements layer {
 	    	matrixDeepCopy[i] = this.hiddenMatrix[i];
     	}
 	    return matrixDeepCopy;
+	}
+
+
+	@Override
+	public double[][] getWeights() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

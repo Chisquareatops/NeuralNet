@@ -6,5 +6,7 @@ public interface layer {
 	public void setPrev(layer prevLayer);
 
 	public void forward(double[] inputSet);
+	
+	public double[][] getWeights();
 
 }

@@ -19,6 +19,10 @@ public class NeuralNet {
 	//ADD IMPLEMENTATION for changing how many layers are in middle (how many 'cols' of nodes)
 	public NeuralNet(String fileName, int numInputVars, int nodes, Activators activator, int numOutputVars, int numHiddenLayers, boolean biasNodes) {
 		
+		if (biasNodes) {
+			numInputVars += 1; // the num of input vars is increased by one to represent the bias node that will exist in each layer
+		}
+		
 		//creates an mxn matrix from user data, where m is the number of data points in the input and m is the number of input variables
 		this.input = new inputLayer(numInputVars, numOutputVars, fileName, biasNodes);
 		
@@ -65,7 +69,8 @@ public class NeuralNet {
 	public void train() { // currently executes once for each dataset/sample in input data
 		for (int i=0; i<this.input.getSampleSize(); i++) { //repeats for every pair/set of input variables
 			this.input.nextLayer.forward(this.input.getInputSet(i)); //calls the forward method within hiddenLayer on one set of input variables (one row of the input matrix)
-			this.output.backward(this.input.getTargetVals(i), i); //calls the backward method within hiddenLayer on one set of input variables
+			//this.output.backward(this.input.getTargetVals(i), i); //calls the backward method within hiddenLayer on one set of input variables
+			this.output.backward2(this.input.getTargetVals(i));
 			System.out.println("this is the end of trainging round " + (i+1));
 			System.out.println();
 		}

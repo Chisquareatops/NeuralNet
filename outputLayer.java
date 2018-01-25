@@ -74,7 +74,7 @@ public class outputLayer implements layer {
       	System.out.println();
       	//DIAGOSTIC PRINT END
       	
-      	double totalError = 
+      	//double totalError = 1;
 
     }
 	
@@ -154,8 +154,43 @@ public class outputLayer implements layer {
       	
 	}
 	
-	public void backward2() {
+	public void backward2(double[] targetVals) {
 		
+		System.out.println("this is the beginning of THE NEW backward (OL)");
+		
+		double[] hiddenLayerVals = this.prevLayer.hiddenMatrix;
+		
+		double totalError = 0;
+		
+		for (int i=0; i<outputVars; i++) { // for each output node
+			totalError += squaredError(targetVals[i], output[i]); // sums the squared error for each output node
+		}
+		
+		weightMatrix origWeights = this.weights.deepCopy();
+		
+		for (int i=0; i<outputVars; i++) { // for each output variable
+			double form1 = (output[i] - targetVals[i]) * (output[i] * (1 - output[i])); // calculate the first part of the formula, which will apply to all connected hidden nodes
+			for (int x=0; x<outputVars; x++) {
+				
+			}
+		}
+		
+      	for (int i=0; i<this.outputVars; i++) { // for each column in the weight matrix (i.e. for each output variable)
+      		double form1 = (output[i] - targetVals[i]) * (output[i] * (1 - output[i])); // calculate the first part of the formula, which will apply to all connected hidden nodes
+      		for (int x=0; x<this.nodes; x++) { // for each row in the weight matrix (i.e. for each connecting node)
+      			double deltaWeight = form1 * hiddenLayerVals[x];
+      			System.out.print(deltaWeight + " ");
+      			double newWeight = this.weights.getWeight(i, x) - deltaWeight; // the new weight is the current weight at this location in the weight matrix minus the change calculated above
+      			this.weights.setWeight(i, x, newWeight); // set weight to new weight
+      		}
+      	}
+      	this.prevLayer.backward2(targetVals, this.outputVars); // call the backward method in the hidden layer connecting to this output layer
+	}
+	
+	
+	public double squaredError(double target, double output) { // finds the squared error of two values
+		double difference = target - output; // takes the difference
+		return (difference * difference) / 2; //squares it and divides by 2
 	}
 
 	@Override
@@ -169,5 +204,12 @@ public class outputLayer implements layer {
 		this.prevLayer = (hiddenLayer) prevLayer;
 		
 	}
-
+	
+	public double getOutput(int i) {
+		return this.output[i]; // returns an output value given its index
+	}
+	
+	public double[][] getWeights() {
+		return this.weights.getWeights();
+	}
 }

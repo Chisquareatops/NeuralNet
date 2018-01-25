@@ -6,7 +6,6 @@ public class inputLayer implements layer {
 	
 	protected outputLayer output;
 	protected layer nextLayer;
-	
 	protected int numInputVars;
 	protected int numOutputVars;
 	// an mxn matrix where m is the number of data points and n is the number of input variables in each data point
@@ -16,7 +15,7 @@ public class inputLayer implements layer {
 	
 	protected boolean biasNodes;
 
-	public inputLayer(int numInputVars, int numOutputVars, String fileName) {
+	public inputLayer(int numInputVars, int numOutputVars, String fileName, boolean biasNodes) {
 		
 		//DIAGNOSTIC PRINT LINES BEGIN
 		System.out.println("CREATING THE INPUT LAYER");
@@ -36,10 +35,12 @@ public class inputLayer implements layer {
 				String line = inputStream.next();
 				lines.add(line); // add each line to a String array
 			}
+			/*
 			if (biasNodes) {
-				numInputVars += 1; // the num of input vars is increased by one to represent the bias node that will exist in each layer
+				this.numInputVars += 1; // the num of input vars is increased by one to represent the bias node that will exist in each layer
 			}
-			this.inputData = new double[lines.size()][numInputVars]; // an mxn matrix where m is the number of data points (lines in file) and n is the number of variables
+			*/
+			this.inputData = new double[lines.size()][this.numInputVars]; // an mxn matrix where m is the number of data points (lines in file) and n is the number of variables
 			this.targetVals = new double[lines.size()][numOutputVars]; // an mxn matrix where m is the number of data points (lines in file) and n is number of output variables
 			
 			for(int i=0; i<lines.size(); i++) { //goes down lines of file
@@ -47,13 +48,18 @@ public class inputLayer implements layer {
 				for(int x=0; x<values.length; x++) { //goes along each line
 					//System.out.println(values[x]); TEST
 					//System.out.println(Double.parseDouble(values[x])); TEST
-					if ((!biasNode && x<numInputVars) || (biasNode && x<numInputVars-1)) { // if the current value represents an input variable
+					if ((!biasNodes && x<this.numInputVars) || (biasNodes && x<this.numInputVars-1)) { // if the current value represents an input variable
 						this.inputData[i][x]= Double.parseDouble(values[x]); //adds the input variables to a 2 dimensional array
 						
 						//System.out.println("the added INP values is: " + this.inputData[i][x]);
 					}
 					else { // if the current value represents an output variable
-						this.targetVals[i][x-numInputVars]= Double.parseDouble(values[x]); //putting the target values in their own array
+						if (!biasNodes) {
+							this.targetVals[i][x-this.numInputVars]= Double.parseDouble(values[x]); //putting the target values in their own array
+						}
+						else {
+							this.targetVals[i][x-(this.numInputVars-1)]= Double.parseDouble(values[x]); //putting the target values in their own array
+						}
 						//DIAGNOSTIC PRINT LINES BEGIN
 						//System.out.println("the added SOLN values is: " + this.targetVals[i][x-numInputVars]);
 						//System.out.println();
@@ -61,7 +67,7 @@ public class inputLayer implements layer {
 					}
 				}
 				if (biasNodes) {
-					this.inputData[i][numInputVars] = 1; // adds one bias node to the input matrix per line if bias nodes are on
+					this.inputData[i][this.numInputVars-1] = 1; // adds one bias node to the input matrix per line if bias nodes are on
 				}
 			}
 			inputStream.close();
@@ -137,6 +143,12 @@ public class inputLayer implements layer {
 	public void forward(double[] inputSet) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public double[][] getWeights() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
