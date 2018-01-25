@@ -13,6 +13,8 @@ public class inputLayer implements layer {
 	protected double[][] inputData;
 	// an mxn matrix where m is the number of data points and n is the number of output variables in each data point; the correct output values associated with the inputs
 	protected double[][] targetVals;
+	
+	protected boolean biasNodes;
 
 	public inputLayer(int numInputVars, int numOutputVars, String fileName) {
 		
@@ -27,14 +29,16 @@ public class inputLayer implements layer {
 		Scanner inputStream;
 		
 		try{
-			File file= new File(fileName);
+			File file = new File(fileName);
 			inputStream = new Scanner(file); // try to attach an input stream to the file
 
 			while(inputStream.hasNext()){ // while there is still data
 				String line = inputStream.next();
 				lines.add(line); // add each line to a String array
 			}
-			
+			if (biasNodes) {
+				numInputVars += 1; // the num of input vars is increased by one to represent the bias node that will exist in each layer
+			}
 			this.inputData = new double[lines.size()][numInputVars]; // an mxn matrix where m is the number of data points (lines in file) and n is the number of variables
 			this.targetVals = new double[lines.size()][numOutputVars]; // an mxn matrix where m is the number of data points (lines in file) and n is number of output variables
 			
@@ -43,8 +47,9 @@ public class inputLayer implements layer {
 				for(int x=0; x<values.length; x++) { //goes along each line
 					//System.out.println(values[x]); TEST
 					//System.out.println(Double.parseDouble(values[x])); TEST
-					if (x<numInputVars) { // if the current value represents an input variable
+					if ((!biasNode && x<numInputVars) || (biasNode && x<numInputVars-1)) { // if the current value represents an input variable
 						this.inputData[i][x]= Double.parseDouble(values[x]); //adds the input variables to a 2 dimensional array
+						
 						//System.out.println("the added INP values is: " + this.inputData[i][x]);
 					}
 					else { // if the current value represents an output variable
@@ -54,9 +59,14 @@ public class inputLayer implements layer {
 						//System.out.println();
 						//DIAGNOSTIC PRINT LINES END
 					}
-				}	
+				}
+				if (biasNodes) {
+					this.inputData[i][numInputVars] = 1; // adds one bias node to the input matrix per line if bias nodes are on
+				}
 			}
 			inputStream.close();
+			
+
 			
 			//PRINTS DATA TO TERMINAL FOR CONFIRMATION
 	        testPrint(lines.size());

@@ -72,7 +72,9 @@ public class outputLayer implements layer {
 	    	}
     	System.out.println();
       	System.out.println();
-      	//DIAGOSTIC PRINT END		
+      	//DIAGOSTIC PRINT END
+      	
+      	double totalError = 
 
     }
 	
@@ -150,6 +152,10 @@ public class outputLayer implements layer {
 		
       	this.prevLayer.backward(deltaOutputSumToWeights, origWeights, outputVars, sample); // call the backward method in the hidden layer connecting to this output layer
       	
+	}
+	
+	public void backward2() {
+		
 	}
 
 	@Override

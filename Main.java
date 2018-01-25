@@ -7,7 +7,7 @@ public class Main {
 	        int inputs =  Integer.parseInt(args[1]);
 	        //File file= new File(fileName);
 	        
-	        NeuralNet nn = new NeuralNet(fileName, inputs, 3, Activators.TANH, 1, 1);
+	        NeuralNet nn = new NeuralNet(fileName, inputs, 3, Activators.TANH, 1, 1, true);
 	 }
 	
 }

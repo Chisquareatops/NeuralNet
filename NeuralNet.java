@@ -14,11 +14,13 @@ public class NeuralNet {
 	//a String specifying the function to be called during forward propagation
 	protected Activators activator;
 	
+	protected boolean biasNodes;
+	
 	//ADD IMPLEMENTATION for changing how many layers are in middle (how many 'cols' of nodes)
-	public NeuralNet(String fileName, int numInputVars, int nodes, Activators activator, int numOutputVars, int numHiddenLayers) {
+	public NeuralNet(String fileName, int numInputVars, int nodes, Activators activator, int numOutputVars, int numHiddenLayers, boolean biasNodes) {
 		
 		//creates an mxn matrix from user data, where m is the number of data points in the input and m is the number of input variables
-		this.input = new inputLayer(numInputVars, numOutputVars, fileName);
+		this.input = new inputLayer(numInputVars, numOutputVars, fileName, biasNodes);
 		
 		//DIAGNOSTIC PRINT LINES BEGIN
 		System.out.println("done creating input layer");
@@ -53,6 +55,8 @@ public class NeuralNet {
 		
 		//the activation function specified by the user
 		this.activator = activator;
+		
+		this.biasNodes = biasNodes;
 		
 		this.train(); //SHOULD THIS BE CALLED HERE OR IN MAIN? Does creating a network automatically train it?
 		
